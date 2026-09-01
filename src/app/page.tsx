@@ -46,7 +46,7 @@ export default async function Home() {
   // Signed in: pull this user's active reading entry, if any.
   const { data: entry } = await supabase
     .from("reading_entries")
-    .select("current_page, books(id, title, author, cover_url)")
+    .select("current_page, total_pages, books(id, title, author, cover_url)")
     .eq("user_id", user.id)
     .eq("status", "reading")
     .order("updated_at", { ascending: false })

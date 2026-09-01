@@ -47,16 +47,35 @@ export async function startReading(book: BookInput) {
 }
 
 // Updates page progress on a book the user is currently reading.
-export async function logProgress(bookId: string, currentPage: number) {
+// totalPages is optional - if provided (e.g. the first time someone
+// logs progress and knows the book's length), it's saved alongside so
+// the UI can render a real progress bar going forward.
+export async function logProgress(
+  bookId: string,
+  currentPage: number,
+  totalPages?: number | null
+) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error("You need to be signed in to log progress.");
 
+  const update: {
+    current_page: number;
+    updated_at: string;
+    total_pages?: number;
+  } = {
+    current_page: currentPage,
+    updated_at: new Date().toISOString(),
+  };
+  if (totalPages != null && !Number.isNaN(totalPages)) {
+    update.total_pages = totalPages;
+  }
+
   const { error } = await supabase
     .from("reading_entries")
-    .update({ current_page: currentPage, updated_at: new Date().toISOString() })
+    .update(update)
     .eq("user_id", user.id)
     .eq("book_id", bookId);
   if (error) throw error;

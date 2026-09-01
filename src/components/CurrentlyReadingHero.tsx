@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { MarkFinishedButton } from "@/components/MarkFinishedButton";
+import { LogProgressForm } from "@/components/LogProgressForm";
 
 type Entry = {
   current_page: number | null;
+  total_pages: number | null;
   books: {
     id: string;
     title: string;
@@ -34,6 +36,10 @@ export function CurrentlyReadingHero({ entry }: { entry: Entry | null }) {
   }
 
   const book = entry.books;
+  const pct =
+    entry.current_page != null && entry.total_pages
+      ? Math.min(100, Math.round((entry.current_page / entry.total_pages) * 100))
+      : null;
 
   return (
     <div className="bg-ink-2 border border-line rounded-[14px] p-7 flex items-center gap-6 mb-11 relative overflow-hidden">
@@ -59,13 +65,33 @@ export function CurrentlyReadingHero({ entry }: { entry: Entry | null }) {
           {book.title}
         </h2>
         <p className="text-paper-dim text-sm mb-3">{book.author}</p>
-        {entry.current_page != null && (
+
+        {pct != null ? (
+          <div className="flex items-center gap-3 max-w-[280px]">
+            <div className="flex-1 h-1 bg-ink-3 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-brass"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <span className="font-mono text-xs text-paper-dim whitespace-nowrap">
+              p. {entry.current_page} / {entry.total_pages}
+            </span>
+          </div>
+        ) : entry.current_page != null ? (
           <p className="font-mono text-xs text-paper-dim">
             Page {entry.current_page}
           </p>
-        )}
+        ) : null}
       </div>
-      <MarkFinishedButton bookId={book.id} />
+      <div className="flex flex-col items-end gap-2">
+        <LogProgressForm
+          bookId={book.id}
+          currentPage={entry.current_page}
+          totalPages={entry.total_pages}
+        />
+        <MarkFinishedButton bookId={book.id} />
+      </div>
     </div>
   );
 }
