@@ -19,7 +19,10 @@ export function BookSpine({
 }) {
   if (coverUrl) {
     return (
-      <div className="flex-shrink-0 w-[70px] h-[150px] rounded-[3px] overflow-hidden">
+      <div
+        className="flex-shrink-0 w-9 h-[150px] rounded-[3px] overflow-hidden"
+        title={title}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={coverUrl}
@@ -32,7 +35,7 @@ export function BookSpine({
 
   return (
     <div
-      className="flex-shrink-0 w-8 h-[145px] rounded-[3px_3px_2px_2px] flex flex-col items-center justify-end pb-2.5"
+      className="flex-shrink-0 w-9 h-[150px] rounded-[3px_3px_2px_2px] flex flex-col items-center justify-end pb-2.5"
       style={{ background: toneFor(id) }}
       title={title}
     >
