@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SiteHeader } from "@/components/SiteHeader";
 
 export const metadata: Metadata = {
   title: "Spine — track, shelve, and discover books",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-full flex flex-col bg-ink text-paper font-sans">
+        <SiteHeader />
         {children}
       </body>
     </html>

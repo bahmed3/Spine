@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { SignInButton } from "@/components/SignInButton";
-import { SignOutButton } from "@/components/SignOutButton";
 import { CurrentlyReadingHero } from "@/components/CurrentlyReadingHero";
 import { createClient } from "@/lib/supabase/server";
 
@@ -13,11 +12,6 @@ export default async function Home() {
   if (!user) {
     return (
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center">
-        <div className="flex items-center gap-2.5 mb-10">
-          <div className="w-[22px] h-7 rounded-tl-sm rounded-bl-[5px] rounded-tr-[5px] rounded-br-[5px] bg-gradient-to-b from-oxblood to-oxblood-light" />
-          <span className="font-serif font-semibold text-xl">spine</span>
-        </div>
-
         <p className="font-mono text-xs tracking-widest uppercase text-brass mb-5">
           Track. Shelve. Discover.
         </p>
@@ -55,22 +49,6 @@ export default async function Home() {
 
   return (
     <main className="flex-1 max-w-[900px] w-full mx-auto px-8 py-9 pb-20">
-      <div className="flex items-center justify-between mb-9">
-        <div className="flex items-center gap-2.5">
-          <div className="w-[22px] h-7 rounded-tl-sm rounded-bl-[5px] rounded-tr-[5px] rounded-br-[5px] bg-gradient-to-b from-oxblood to-oxblood-light" />
-          <span className="font-serif font-semibold text-xl">spine</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link
-            href="/discover"
-            className="text-sm text-paper-dim hover:text-paper transition"
-          >
-            Discover
-          </Link>
-          <SignOutButton />
-        </div>
-      </div>
-
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <CurrentlyReadingHero entry={entry as any} />
 
