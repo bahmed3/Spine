@@ -25,6 +25,14 @@ export async function SiteHeader() {
         >
           Discover
         </Link>
+        {user && (
+          <Link
+            href="/profile"
+            className="text-sm text-paper-dim hover:text-paper transition"
+          >
+            Profile
+          </Link>
+        )}
         {user ? <SignOutButton /> : <SignInButton compact />}
       </nav>
     </header>
