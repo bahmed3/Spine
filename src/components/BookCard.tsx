@@ -1,5 +1,6 @@
 import type { OpenLibraryBook } from "@/lib/api/openLibrary";
 import { StartReadingButton } from "@/components/StartReadingButton";
+import { AddToShelfButton } from "@/components/AddToShelfButton";
 
 const FALLBACK_TONES = [
   "#4A5D7A",
@@ -20,9 +21,13 @@ function fallbackTone(key: string) {
 export function BookCard({
   book,
   rank,
+  shelves = [],
+  signedIn = false,
 }: {
   book: OpenLibraryBook;
   rank?: number;
+  shelves?: { id: string; name: string }[];
+  signedIn?: boolean;
 }) {
   return (
     <div className="flex-shrink-0 w-[132px] group">
@@ -48,7 +53,10 @@ export function BookCard({
         {book.title}
       </div>
       <div className="text-[11px] text-paper-dim mb-2">{book.author}</div>
-      <StartReadingButton book={book} />
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <StartReadingButton book={book} />
+        <AddToShelfButton book={book} shelves={shelves} signedIn={signedIn} />
+      </div>
     </div>
   );
 }

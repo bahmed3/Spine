@@ -23,12 +23,15 @@ export async function startReading(book: BookInput) {
     throw new Error("You need to be signed in to start reading a book.");
   }
 
-  const { error: bookError } = await supabase.from("books").upsert({
-    id: book.key,
-    title: book.title,
-    author: book.author,
-    cover_url: book.coverUrl,
-  });
+  const { error: bookError } = await supabase.from("books").upsert(
+    {
+      id: book.key,
+      title: book.title,
+      author: book.author,
+      cover_url: book.coverUrl,
+    },
+    { onConflict: "id", ignoreDuplicates: true }
+  );
   if (bookError) throw bookError;
 
   const { error: entryError } = await supabase.from("reading_entries").upsert(

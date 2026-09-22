@@ -27,6 +27,14 @@ export async function SiteHeader() {
         </Link>
         {user && (
           <Link
+            href="/shelves"
+            className="text-sm text-paper-dim hover:text-paper transition"
+          >
+            Shelves
+          </Link>
+        )}
+        {user && (
+          <Link
             href="/profile"
             className="text-sm text-paper-dim hover:text-paper transition"
           >

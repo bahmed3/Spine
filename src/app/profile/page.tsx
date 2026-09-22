@@ -21,6 +21,7 @@ export default async function ProfilePage() {
     { data: reviews },
     { data: recentFinished },
     { data: yearFinishedDates },
+    { data: shelves },
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -51,6 +52,11 @@ export default async function ProfilePage() {
       .eq("user_id", user.id)
       .eq("status", "finished")
       .gte("finished_at", `${new Date().getFullYear()}-01-01`),
+    supabase
+      .from("shelves")
+      .select("id, name, shelf_books(book_id)")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false }),
   ]);
 
   const displayName = profile?.display_name ?? user.email?.split("@")[0] ?? "Reader";
@@ -136,7 +142,7 @@ export default async function ProfilePage() {
           </Link>
         </div>
         {recentFinished && recentFinished.length > 0 ? (
-          <div className="flex items-end gap-2 bg-ink-2 border border-line rounded-xl p-5 overflow-x-auto">
+          <div className="flex items-end gap-2 flex-wrap bg-ink-2 border border-line rounded-xl p-5">
             {recentFinished.map((entry, i) => {
               const book = Array.isArray(entry.books) ? entry.books[0] : entry.books;
               if (!book) return null;
@@ -145,6 +151,7 @@ export default async function ProfilePage() {
                   key={`${book.id}-${i}`}
                   id={book.id}
                   title={book.title}
+                  author={book.author}
                   coverUrl={book.cover_url}
                 />
               );
@@ -161,15 +168,39 @@ export default async function ProfilePage() {
         )}
       </div>
 
-      {/* SHELVES - not built yet, honest placeholder */}
+      {/* SHELVES */}
       <div>
         <div className="flex items-baseline justify-between mb-4">
           <h2 className="font-serif font-medium text-[19px]">Shelves</h2>
+          <Link href="/shelves" className="text-xs text-paper-dim font-mono">
+            manage shelves →
+          </Link>
         </div>
-        <div className="bg-ink-2 border border-line rounded-xl p-6 text-sm text-paper-dim">
-          Shelves are coming next — you&apos;ll be able to group books into
-          public collections here.
-        </div>
+        {shelves && shelves.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {shelves.map((shelf) => (
+              <Link
+                key={shelf.id}
+                href={`/shelves/${shelf.id}`}
+                className="bg-ink-2 border border-line rounded-xl p-5 hover:border-line-strong transition"
+              >
+                <h3 className="font-medium text-[15px] mb-1">{shelf.name}</h3>
+                <p className="font-mono text-xs text-brass">
+                  {shelf.shelf_books?.length ?? 0} book
+                  {shelf.shelf_books?.length === 1 ? "" : "s"}
+                </p>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-ink-2 border border-line rounded-xl p-6 text-sm text-paper-dim">
+            No shelves yet.{" "}
+            <Link href="/shelves" className="text-brass hover:underline">
+              Create your first one
+            </Link>
+            .
+          </div>
+        )}
       </div>
     </main>
   );

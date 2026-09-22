@@ -1,5 +1,6 @@
 import { getTrendingBooks, searchBooks } from "@/lib/api/openLibrary";
 import { BookCard } from "@/components/BookCard";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
 const GENRES = [
@@ -22,11 +23,28 @@ export default async function DiscoverPage({
   searchParams: Promise<{ genre?: string; q?: string }>;
 }) {
   const { genre = "fiction", q } = await searchParams;
+  const supabase = await createClient();
 
-  const [trending, searchResults] = await Promise.all([
+  const [
+    { data: userData },
+    trending,
+    searchResults,
+  ] = await Promise.all([
+    supabase.auth.getUser(),
     getTrendingBooks(genre, 12),
     q ? searchBooks(q, 12) : Promise.resolve([]),
   ]);
+
+  const user = userData.user;
+  let shelves: { id: string; name: string }[] = [];
+  if (user) {
+    const { data } = await supabase
+      .from("shelves")
+      .select("id, name")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+    shelves = data ?? [];
+  }
 
   return (
     <main className="flex-1 max-w-[1080px] w-full mx-auto px-8 py-9 pb-20">
@@ -78,7 +96,12 @@ export default async function DiscoverPage({
           ) : (
             <div className="flex gap-5 overflow-x-auto pb-2">
               {searchResults.map((book) => (
-                <BookCard key={book.key} book={book} />
+                <BookCard
+                  key={book.key}
+                  book={book}
+                  shelves={shelves}
+                  signedIn={!!user}
+                />
               ))}
             </div>
           )}
@@ -98,7 +121,13 @@ export default async function DiscoverPage({
         </div>
         <div className="flex gap-5 overflow-x-auto pb-2">
           {trending.map((book, i) => (
-            <BookCard key={book.key} book={book} rank={i + 1} />
+            <BookCard
+              key={book.key}
+              book={book}
+              rank={i + 1}
+              shelves={shelves}
+              signedIn={!!user}
+            />
           ))}
         </div>
       </section>
